@@ -7,9 +7,28 @@ Currently, the score is the number of crimes on a particular block. The crime da
 
 Currently the input time does not affect the output.
 
+## Install:
+
+$git clone git@github.com:jetolan/stroll.git
+
+$python setup.py install
+
+This is written for python > 3.x
+
 ## Examples:
 
 example.py shows how to get scores in a grid of locations near a particular address at a particular time:
+
+
+## Running the webpage locally
+
+To start the webpage locally, open a Terminal, navigate to the stroll/web directory, and start Flask running in the background:
+
+$python run.py
+
+(Note that you may need to install some python packages on you local computer if the python call gives errors)
+
+Then point your brower to http://127.0.0.1:5000/
 
 
 ## Web
@@ -47,13 +66,5 @@ http://dylanstorey.com/2016/06/Flask_and_AWS.html
 </pre>
 
 
-## Running the webpage locally
 
-To start the webpage locally, open a Terminal, navigate to the stroll/web directory, and start Flask running in the background:
-
-$python run.py
-
-(Note that you may need to install some python packages on you local computer if the python call gives errors)
-
-Then point your brower to http://127.0.0.1:5000/
 
