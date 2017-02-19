@@ -26,7 +26,7 @@ def find_meanlonlat():
 
     # loop over segments, parsing the coordinate string
     fin = np.zeros((len(linestring), 2))
-    for i in xrange(0, len(linestring)):
+    for i in range(0, len(linestring)):
         fin[i, :] = parse_coordstring(linestring.iloc[i])
 
     # find the mean lat,lon and join to dataframe.
@@ -51,7 +51,7 @@ def parse_coordstring(str_in):
 
     # loop over string pairs
     array1 = np.zeros((2, lrhs.count(',')))
-    for i in xrange(0, lrhs.count(',')):
+    for i in range(0, lrhs.count(',')):
         l_out = np.fromstring(pairs[i], dtype=float, sep=' ')
         array1[:, i] = np.transpose(l_out)
 
