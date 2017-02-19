@@ -1,0 +1,113 @@
+.header {
+    display: table;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 50px;
+    background: url(../img/chicago_parking.jpg) no-repeat center center scroll;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    margin: 0;
+}
+
+H1,H2,H3 {
+    color: black;
+   /* Add an outline to the text */
+    text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+}
+
+.attribution-text {
+    color: white;
+    /* Add an outline to the text */
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+table {
+    border-collapse:collapse ;
+    margin-left:auto;
+    margin-right:auto;
+    border-bottom: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+}
+
+td, th {
+    border:none;
+}
+
+.captions {
+    color: black;
+    /* Add an outline to the text */
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+html,
+body {
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    padding-top: 50px;
+}
+
+.text-vertical-center {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.text-vertical-center h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 4.5em;
+    font-weight: 700;
+}
+
+#presentation {
+    top: 50px;
+    width: 100%;
+    height: 100%;
+    display: table;
+    text-align: center;
+}
+
+/* unvisited links */
+a:link    {
+    color: #0099FF;
+}
+
+/* visited links */
+a:visited {
+    color: #000099;
+    -moz-text-decoration-color: #000099;
+    text-decoration-color: #000099;
+}
+
+/* user hovers */
+a:hover   {
+    color: #0033FF;
+    -moz-text-decoration-color: #0033FF;
+    text-decoration-color: #0033FF;
+    text-decoration: underline;
+}
+
+/* active links */
+a:active  {
+    color: white;
+    -moz-text-decoration-color: white;
+    text-decoration-color: white;
+}
