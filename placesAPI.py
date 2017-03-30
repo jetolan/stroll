@@ -18,6 +18,7 @@ KEY="AIzaSyBBD7_aZuBAuYQ2bwnNFiKJzrA1qCyuu8E"
 # the area within the radius. This is because Google API only lets you get up to
 # 60 places maximum.
 ################################################################################
+def getPlaces(latitude,longitude,radius):
 	places=[] # declare places matrix variable
 	## Changes latitude, longitude to string and make Google API URL
 	location=str(latitude)+","+str(longitude) #lat+long
