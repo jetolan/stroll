@@ -10,12 +10,17 @@ import numpy as np
 import datetime
 from dateutil import parser
 from geopy.geocoders import Nominatim
+from stroll.placesAPI import getPlaces
 
 
 def read_crimes():
     df = pd.read_csv('data/SFPD_Incidents_-_from_1_January_2003.csv')
 
+    df['lon']=df['X']
+    df['lat']=df['Y']
+    df.drop(['X','Y'], axis=1, inplace=True)
     return df
+    
 
 
 def find_meanlonlat():
@@ -31,7 +36,7 @@ def find_meanlonlat():
 
     # find the mean lat,lon and join to dataframe.
     # this is not accurate and should be improved!
-    mean_latlon = {'meanlon': fin[:, 0], 'meanlat': fin[:, 1]}
+    mean_latlon = {'lon': fin[:, 0], 'lat': fin[:, 1]}
     m_latlon = pd.DataFrame(mean_latlon)
     df = df.join(m_latlon)
 
@@ -74,13 +79,16 @@ def convert_address(address):
 #-----------------------------------------#
 
 
-def grid_of_segments(in_lat, in_lon):
+def limit_df(df, in_lat, in_lon):
     '''
     Given an input latitude and longitude, find
     a square grid of coordinates around it with id's
 
+    The right thing to use for this is probably geoPandas
+
     Parameters:
     ------------
+    df:DataFrame
     in_lat:float
     in_lon:float
 
@@ -99,44 +107,53 @@ def grid_of_segments(in_lat, in_lon):
     minlon = in_lon - field_of_view_lon / 2
     maxlon = in_lon + field_of_view_lon / 2
 
-    # grab the coordinates
-    df = find_meanlonlat()
 
     # limit the street centers to our area
-    A = df['meanlon'] > minlon
-    B = df['meanlon'] < maxlon
-    C = df['meanlat'] > minlat
-    D = df['meanlat'] < maxlat
+    A = df['lon'] > minlon
+    B = df['lon'] < maxlon
+    C = df['lat'] > minlat
+    D = df['lat'] < maxlat
 
     found_indices = A * B * C * D
     out_segments = df[found_indices]
 
-    # limit crimes to fov too
-    df = read_crimes()
-    A = df['X'] > minlon
-    B = df['X'] < maxlon
-    C = df['Y'] > minlat
-    D = df['Y'] > maxlat
-
-    found_indices = A * B * C * D
-    out_crimes = df[found_indices]
-
-    # now assign crimes to each of the blocks
-    lats = np.array(out_segments.meanlat)
-    lons = np.array(out_segments.meanlon)
-    num_crimes = np.zeros(len(out_segments))
-    for i in range(len(out_crimes)):
-        lon = out_crimes['X'].iloc[i]
-        lat = out_crimes['Y'].iloc[i]
-        dist = np.sqrt(np.square(lats - lats) + np.square(lon - lons))
-        ind = np.argmin(dist)
-        num_crimes[ind] += 1
-
-    num_crimes = pd.DataFrame({"num_crimes": num_crimes})
-    out_segments.reset_index(inplace=True)
-    out_segments = out_segments.join(num_crimes)
-
     return out_segments
+    
+def create_segments(df, segments):
+    '''
+    Takes df of values (ie crimes) and bins into street blocks 
+    in segments
+
+    Parameters:
+    ---------
+    df: DataFrame
+       Data to be binned
+       Contains keys ['value', 'lon', 'lat']
+
+    Outputs:
+    --------
+    segments: DataFrame
+    '''
+
+    #EACH SEGMENT SHOULD HAVE A UNIQUE ID AND THE OUTPUT FROM THIS FUNCTION
+    #WILL CONTAIN UNIQUE IDS
+    
+    # now assign crimes to each of the blocks
+    lats = np.array(segments.lat)
+    lons = np.array(segments.lon)
+    num = np.zeros(len(segments))
+    for i in range(len(df)):
+        lon = df['lon'].iloc[i]
+        lat = df['lat'].iloc[i]
+        dist = np.sqrt(np.square(float(lat) - lats) + np.square(float(lon) - lons))
+        ind = np.argmin(dist)
+        num[ind] += 1
+
+    num = pd.DataFrame({"num": num})
+    segments.reset_index(inplace=True)
+    segments = segments.join(num)
+
+    return segments
 
     #------------------------------#
 
@@ -165,23 +182,36 @@ def make_grid_of_scores(in_time, in_address):
     # get the location (can be coordinates or street address)
     [out_lat, out_lon] = convert_address(in_address)
 
-    # get grid of segments
-    segments = grid_of_segments(out_lat, out_lon)
+    #grab blocks & limit to desired area
+    df=find_meanlonlat()
+    segments= limit_df(df, out_lat, out_lon)
 
+    #grab crimes and limit to desired area
+    df=read_crimes()
+    crimes=limit_df(df, out_lat, out_lon)
+
+    #grab business and limit to radius
+    radius=500
+    businesses=getPlaces(out_lat, out_lon, radius)
+    
+    #now bin
+    crime_segments=create_segments(crimes, segments)
+    business_segments=create_segments(businesses,segments)
+    
     # loop over segems, get scores
     # this loop is slow... vectorize?
     business_score = []
     crime_score = []
     for i in range(len(segments)):
 
-        # this is the business scode (right now it is one)
-        business_score.append(1)
+        # this is the business score
+        business_score.append(business_segments.num.iloc[i])
         # this is crime score
-        crime_score.append(segments.num_crimes.iloc[i])
+        crime_score.append(crime_segments.num.iloc[i])
 
     # calculate combined score... high number is less safe
     score = score_combine(business_score, crime_score)
-
+    
     # take score and put in dataframe
     df_score = pd.DataFrame(score, columns=['score'])
 
@@ -200,7 +230,7 @@ def make_grid_of_scores(in_time, in_address):
         str(out_lat) + ',' + str(out_lon) + ')'
 
     coord_out = '{lat: ' + str(out_lat) + ',  lng: ' + str(out_lon) + '};'
-
+    stopp
     return out_segments, loc_out, coord_out
 
 
@@ -235,14 +265,17 @@ def score_combine(business_score, crime_score):
     crime_score = np.array(crime_score)
 
     # Start with the score=1
-    score = 1
+    #score = 1
 
     # add to score for crimes
-    score = score + crime_score
+    #score = score + crime_score
 
     # divide by business_score
-    score = score / business_score
+    #score = score / business_score
 
+    #score is just business score for now...
+    score=business_score
+    
     # we shouldn't have any scores <0
     score[np.where(score < 0)] = 0
 
@@ -256,8 +289,8 @@ if __name__ == "__main__":
 
     in_time = 'Now'
     in_address = '37.72, -122.37'
-    #out_segments, loc_out, coord_out = make_grid_of_scores(in_time, in_address)
+    out_segments, loc_out, coord_out = make_grid_of_scores(in_time, in_address)
 
-    in_lat = 37.72
-    in_lon = -122.37
-    out_segments = grid_of_segments(in_lat, in_lon)
+    #in_lat = 37.72
+    #in_lon = -122.37
+    #out_segments,_,_ = make_grid_of_scores(in_time, in_address)

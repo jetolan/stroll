@@ -57,7 +57,7 @@ def getPlaces(latitude,longitude,radius):
 		else:
 			break
 	## Change places matrix into pandas data frame with sensible column names
-	df = pd.DataFrame(places,columns=["Name","Longitude","Latitude", "Open Now"])
+	df = pd.DataFrame(places,columns=["Name","lon","lat", "Open Now"])
 	return(df)
 
 # [1] When you ask for a JSON request for Google places, it returns 20 places
