@@ -16,10 +16,9 @@ def stroll_input():
 
 @app.route('/output')
 def stroll_output():
-    ntime = request.args.get('stroll_time')
     loc = request.args.get('stroll_loc')
 
     # convert park
-    str_out, loc_out, coord_out = utils.make_grid_of_scores(ntime, loc)
+    str_out, loc_out, coord_out = utils.make_grid_of_scores(loc)
 
     return render_template("output.html", loc_out=loc_out, str_out=str_out, coord_out=coord_out)

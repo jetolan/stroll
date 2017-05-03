@@ -7,7 +7,6 @@ Stroll prediction.
 
 import pandas as pd
 import numpy as np
-import datetime
 from dateutil import parser
 from geopy.geocoders import Nominatim
 from stroll.placesAPI import getPlaces
@@ -158,12 +157,10 @@ def create_segments(df, segments):
     #------------------------------#
 
 
-def make_grid_of_scores(in_time, in_address):
+def make_grid_of_scores(in_address):
     '''
     Parameters:
     ------------
-    in_time: str
-             Time, flexible formatting
     in_address: str
              Address, flexible formatting
 
@@ -173,12 +170,6 @@ def make_grid_of_scores(in_time, in_address):
 
 
     '''
-    # get the time parsed
-    if in_time == "now" or in_time == "Now":
-        ntime = datetime.datetime.now()
-    else:
-        ntime = parser.parse(in_time)
-
     # get the location (can be coordinates or street address)
     [out_lat, out_lon] = convert_address(in_address)
 
@@ -193,7 +184,7 @@ def make_grid_of_scores(in_time, in_address):
     #grab business and limit to radius
     radius=500
     businesses=getPlaces(out_lat, out_lon, radius)
-    
+
     #now bin
     crime_segments=create_segments(crimes, segments)
     business_segments=create_segments(businesses,segments)
@@ -287,10 +278,9 @@ def score_combine(business_score, crime_score):
 
 if __name__ == "__main__":
 
-    in_time = 'Now'
     in_address = '37.72, -122.37'
-    out_segments, loc_out, coord_out = make_grid_of_scores(in_time, in_address)
+    out_segments, loc_out, coord_out = make_grid_of_scores(in_address)
 
     #in_lat = 37.72
     #in_lon = -122.37
-    #out_segments,_,_ = make_grid_of_scores(in_time, in_address)
+    #out_segments,_,_ = make_grid_of_scores(in_address)
