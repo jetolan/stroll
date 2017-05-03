@@ -230,7 +230,7 @@ def make_grid_of_scores(in_time, in_address):
         str(out_lat) + ',' + str(out_lon) + ')'
 
     coord_out = '{lat: ' + str(out_lat) + ',  lng: ' + str(out_lon) + '};'
-    stopp
+
     return out_segments, loc_out, coord_out
 
 
