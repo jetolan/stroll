@@ -10,6 +10,7 @@ import time
 
 ### Google Places API Key
 KEY="AIzaSyBBD7_aZuBAuYQ2bwnNFiKJzrA1qCyuu8E"
+MAPS_API_KEY="AIzaSyAHhD7-PltPvvv4wGglJbrVBpyI8_JMPMc"
 
 # Function: getPlaces
 # Usage: getPlaces(lat_coord,long_coord,radius)
