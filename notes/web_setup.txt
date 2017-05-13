@@ -56,3 +56,8 @@ server {
 $sudo ln -s /etc/nginx/sites-available/stroll /etc/nginx/sites-enabled
 $sudo nginx -t
 $sudo service nginx restart
+
+
+
+% if emacs doesn't work
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.emacs.d
