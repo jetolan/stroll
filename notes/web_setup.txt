@@ -1,0 +1,58 @@
+#make .pem file publically visible
+
+$chmod 400 Stroll.pem
+
+#from directory with .pem file:
+
+$ssh -i Stroll.pem  ubuntu@35.166.76.226
+
+$sudo apt-get update
+
+$sudo apt-get install python-pip python-dev build-essential git
+
+$sudo apt-get install gunicorn python-flask nginx emacs ipython
+
+$sudo pip install numpy pandas geopy requests
+
+###$sudo apt-get install upstart-sysv
+
+#get stroll
+$git clone https://github.com/jetolan/stroll.git
+
+#follow:
+http://dylanstorey.com/2016/06/Flask_and_AWS.html
+
+
+$ sudo emacs /etc/init/stroll.conf
+------------------------------------
+description "Gunicorn application server running stroll"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+setuid ubuntu
+setgid www-data
+
+
+chdir /home/ubuntu/stroll
+exec gunicorn   --bind unix:stroll.sock -m 007 run:app
+
+$sudo start stroll
+
+$sudo emacs /etc/nginx/sites-available/stroll
+-------------------------------------------
+server {
+    listen 80;
+    server_name 35.166.76.226;
+
+        location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/stroll/stroll.sock;
+    }
+}
+
+
+$sudo ln -s /etc/nginx/sites-available/stroll /etc/nginx/sites-enabled
+$sudo nginx -t
+$sudo service nginx restart
