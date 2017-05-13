@@ -236,7 +236,7 @@ def out_to_javascript(out):
         weight = out.iloc[i].weight
 
         # may want to exponentially scale weight for visualization
-        weight = weight**3
+        weight = weight**1
 
         # write strings for javascript
         out_str = out_str + '{location: new google.maps.LatLng(' + str(
