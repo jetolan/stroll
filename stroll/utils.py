@@ -4,7 +4,7 @@ A collection of utils used for
 Stroll prediction.
 
 TODO:ADD DOCUMENTATION!!!!!
-
+NOW!
 '''
 
 import pandas as pd
