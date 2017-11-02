@@ -7,6 +7,7 @@ import requests
 import pandas as pd
 import re
 import time
+import numpy as np
 
 ### Google Places API Key
 KEY="AIzaSyBBD7_aZuBAuYQ2bwnNFiKJzrA1qCyuu8E"
@@ -27,7 +28,7 @@ def getPlaces(latitude,longitude,radius):
 	## Changes latitude, longitude to string and make Google API URL
 	location=str(latitude)+","+str(longitude) #lat+long
 	radius=str(radius) #in meters
-	url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+location+"&radius="+radius+"&key="+KEY+"&hasNextPage=true&nextPage()=true&opennow=true&rankBy=distance"
+	url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+location+"&radius="+radius+"&key="+KEY+"&hasNextPage=true&nextPage()=true&opennow=true"
 	## Loop over pages to get information about open places
 	while True:
 		## Parse JSON file
@@ -53,7 +54,9 @@ def getPlaces(latitude,longitude,radius):
 				open=str(shop['opening_hours'].get('open_now','N/A'))
 			else:
 				open='N/A'
-			places.append([name,long,lat,open]) #append all the above info into places matrix
+			# Get distance
+			distance = np.sqrt((float(long)-longitude)**2+(float(lat)-latitude)**2)
+			places.append([name,long,lat,open,distance]) #append all the above info into places matrix
 		## If there is a next page, update the JSON URL and continue loop, otherwise leave loop (see [1] for more details)
 		if 'next_page_token' in item.keys():
 			url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+location+"&radius="+radius+"&key="+KEY+"&hasNextPage=true&nextPage()=true&opennow=true&pagetoken="+item['next_page_token']
@@ -61,7 +64,8 @@ def getPlaces(latitude,longitude,radius):
 		else:
 			break
 	## Change places matrix into pandas data frame with sensible column names
-	df = pd.DataFrame(places,columns=["Name","lon","lat", "Open Now"])
+	df = pd.DataFrame(places,columns=["Name","lon","lat","Open Now","distance"])
+	df = df.sort_values('distance') #sort by distance
 	return(df)
 
 # [1] When you ask for a JSON request for Google places, it returns 20 places
