@@ -12,19 +12,22 @@ import time
 KEY="AIzaSyBBD7_aZuBAuYQ2bwnNFiKJzrA1qCyuu8E"
 MAPS_API_KEY="AIzaSyAHhD7-PltPvvv4wGglJbrVBpyI8_JMPMc"
 
-# Function: getPlaces
-# Usage: getPlaces(lat_coord,long_coord,radius)
-# Description: Takes in a desired latitude & longitude coordinates and a desired
-# radius (in meters) and outputs a pandas dataframe of up to 60 open places in
-# the area within the radius. This is because Google API only lets you get up to
-# 60 places maximum.
-################################################################################
+
 def getPlaces(latitude,longitude,radius):
+	"""
+	Takes in a desired latitude & longitude coordinates and a desired radius (in meters) and outputs a pandas dataframe 
+	of up to 60 open places in the area within the radius. This is because Google API only lets you get up to 60 places 
+	maximum.
+	
+	:param float latitude: latitude coordinate
+	:param float longitude: longitude coordinate
+	:param float radius: radius in meters
+	"""
 	places=[] # declare places matrix variable
 	## Changes latitude, longitude to string and make Google API URL
 	location=str(latitude)+","+str(longitude) #lat+long
 	radius=str(radius) #in meters
-	url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+location+"&radius="+radius+"&key="+KEY+"&hasNextPage=true&nextPage()=true&opennow=true"
+	url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+location+"&radius="+radius+"&key="+KEY+"&hasNextPage=true&nextPage()=true&opennow=true&rankBy=distance"
 	## Loop over pages to get information about open places
 	while True:
 		## Parse JSON file
